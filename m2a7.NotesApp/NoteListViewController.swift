@@ -7,9 +7,7 @@
 
 import UIKit
 
-
-
-final class NoteListViewController: UIViewController {
+class NoteListViewController: UIViewController {
 
     //MARK: properties
     var notes: [String] = []
@@ -139,6 +137,22 @@ extension NoteListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         showNoteDetailsViewController(with: notes[indexPath.row], at: indexPath)
     }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+            true
+        }
+
+        func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+            if editingStyle == .delete {
+                notes.remove(at: indexPath.row)
+                
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                
+                if let username = UserDefaultsManager.shared.getLastLoggedInUsername() {
+                    UserDefaultsManager.shared.saveNotes(notes, forUser: username)
+                }
+            }
+        }
 }
 
 //MARK: AddNoteViewControllerDelegate
